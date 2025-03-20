@@ -35,7 +35,7 @@ import pandas as pd
 
 # Load PLINK --glm results
 file_path = "all.filtered2.elevation.glm.linear"  # Update with actual file path
-df = pd.read_csv(file_path, sep="\t)
+df = pd.read_csv(file_path, sep="\t")
 
 # Convert numerical columns (handling 'NA' as missing values)
 numeric_cols = ["OBS_CT", "BETA", "SE", "T_STAT", "P"]
