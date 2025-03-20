@@ -102,17 +102,20 @@ plt.figure(figsize=(12, 6))
 for i, chrom in enumerate(chromosomes):
     subset = df[df["CHROM"] == chrom]
     plt.scatter(subset["index"], -np.log10(subset["P"]), 
-                color=colors[i % 2], s=10, label=f"Chr {chrom}" if i < 2 else "")
+                color=colors[i % 2], s=10)
 
 # Add genome-wide significance threshold line (Bonferroni correction)
 significance_threshold = 0.05 / len(df)
 plt.axhline(-np.log10(significance_threshold), color='black', linestyle='dashed', linewidth=1)
 
 # Labels and formatting
-plt.xlabel("Genomic Position")
+plt.xlabel("")
 plt.ylabel("-log10(P-value)")
 plt.title("Manhattan Plot of GWAS Results")
-plt.legend()
+
+# Remove legend and X-axis ticks for large datasets
+plt.xticks([])  # Hide X-axis values
+plt.legend().remove()  # Remove legend
 
 # Save the figure to a file
 output_file = "manhattan_plot.png"
