@@ -113,5 +113,8 @@ plt.xlabel("Genomic Position")
 plt.ylabel("-log10(P-value)")
 plt.title("Manhattan Plot of GWAS Results")
 plt.legend()
-plt.show()
+
+# Save the figure to a file
+output_file = "manhattan_plot.png"
+plt.savefig(output_file, dpi=300, bbox_inches="tight")
 ```
