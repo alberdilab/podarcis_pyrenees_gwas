@@ -64,3 +64,54 @@ tools.display_dataframe_to_user(name="Filtered PLINK --glm Results", dataframe=d
 # Save filtered results
 df_filtered.to_csv("filtered_glm_results.txt", sep="\t", index=False)
 ```
+
+## Manhattan plot
+```py
+import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Load PLINK --glm results
+file_path = "all.filtered2.elevation.glm.linea"  # Update with actual file path
+df = pd.read_csv(file_path, delim_whitespace=True)
+
+# Convert numeric columns and handle missing values
+df["P"] = pd.to_numeric(df["P"], errors="coerce")
+df["POS"] = pd.to_numeric(df["POS"], errors="coerce")
+
+# Drop rows with missing P-values
+df = df.dropna(subset=["P"])
+
+# Convert chromosome names if necessary (e.g., removing "NC_" prefix)
+df["CHROM"] = df["#CHROM"].astype(str).str.replace("NC_", "").str.split(".").str[0]
+df["CHROM"] = pd.to_numeric(df["CHROM"], errors="coerce")
+
+# Sort dataframe by chromosome and position
+df = df.sort_values(by=["CHROM", "POS"])
+
+# Assign index for plotting
+df["index"] = range(len(df))
+
+# Define colors for chromosomes
+chromosomes = df["CHROM"].unique()
+colors = ["blue", "red"] * (len(chromosomes) // 2 + 1)
+
+# Create Manhattan plot
+plt.figure(figsize=(12, 6))
+
+for i, chrom in enumerate(chromosomes):
+    subset = df[df["CHROM"] == chrom]
+    plt.scatter(subset["index"], -np.log10(subset["P"]), 
+                color=colors[i % 2], s=10, label=f"Chr {chrom}" if i < 2 else "")
+
+# Add genome-wide significance threshold line (Bonferroni correction)
+significance_threshold = 0.05 / len(df)
+plt.axhline(-np.log10(significance_threshold), color='black', linestyle='dashed', linewidth=1)
+
+# Labels and formatting
+plt.xlabel("Genomic Position")
+plt.ylabel("-log10(P-value)")
+plt.title("Manhattan Plot of GWAS Results")
+plt.legend()
+plt.show()
+```
